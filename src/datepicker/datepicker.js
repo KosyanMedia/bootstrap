@@ -259,11 +259,12 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.position'])
   closeText: 'Done',
   closeOnDateSelection: true,
   appendToBody: false,
-  showButtonBar: true
+  showButtonBar: true,
+  additionalClass: ''
 })
 
-.directive('datepickerPopup', ['$compile', '$parse', '$document', '$position', 'dateFilter', 'datepickerPopupConfig', 'datepickerConfig',
-function ($compile, $parse, $document, $position, dateFilter, datepickerPopupConfig, datepickerConfig) {
+.directive('datepickerPopup', ['$compile', '$parse', '$document', '$position', 'dateFilter', 'datepickerPopupConfig', 'datepickerConfig','$timeout',
+function ($compile, $parse, $document, $position, dateFilter, datepickerPopupConfig, datepickerConfig, $timeout) {
   return {
     restrict: 'EA',
     require: 'ngModel',
@@ -297,6 +298,9 @@ function ($compile, $parse, $document, $position, dateFilter, datepickerPopupCon
       attrs.$observe('closeText', function(text) {
         scope.closeText = angular.isDefined(text) ? text : datepickerPopupConfig.closeText;
       });
+
+
+      scope.additionalClass = angular.isDefined(attrs.additionalClass) ? originalScope.$eval(attrs.additionalClass) : datepickerPopupConfig.additionalClass;
 
       var getIsOpen, setIsOpen;
       if ( attrs.isOpen ) {
@@ -414,19 +418,26 @@ function ($compile, $parse, $document, $position, dateFilter, datepickerPopupCon
 
       function updatePosition() {
         scope.position = appendToBody ? $position.offset(element) : $position.position(element);
-        scope.position.top = scope.position.top + element.prop('offsetHeight');
+        if(scope.additionalClass){
+            scope.position.top = scope.position.top - $popup.prop('offsetHeight') / 2;
+            if(scope.position.left <= 50) {
+                scope.position.left = 0;
+            }
+        } else {
+            scope.position.top = scope.position.top + element.prop('offsetHeight');
+        }
       }
 
       var documentBindingInitialized = false, elementFocusInitialized = false;
       scope.$watch('isOpen', function(value) {
         if (value) {
-          updatePosition();
           $document.bind('click', documentClickBind);
           if(elementFocusInitialized) {
             element.unbind('focus', elementFocusBind);
           }
           element[0].focus();
           documentBindingInitialized = true;
+          $timeout(updatePosition, 50, true);
         } else {
           if(documentBindingInitialized) {
             $document.unbind('click', documentClickBind);
