@@ -106,7 +106,7 @@ angular.module('ui.bootstrap.typeahead', ['ui.bootstrap.position', 'ui.bootstrap
           if (inputValue === modelCtrl.$viewValue && hasFocus) {
             if (matches.length > 0) {
 
-              scope.activeIdx = 1;
+              scope.activeIdx = 0;
               scope.matches.length = 0;
 
               //transform labels
@@ -261,14 +261,12 @@ angular.module('ui.bootstrap.typeahead', ['ui.bootstrap.position', 'ui.bootstrap
       });
 
       element.bind('blur', function (evt) {
-        return
         hasFocus = false;
         if(scope.matches.length >= 1){
           scope.$apply(function () {
-            scope.select(scope.activeIdx||1);
+            scope.select(scope.activeIdx || 0);
           });
         }
-
       });
 
       // Keep reference to click handler to unbind it.
