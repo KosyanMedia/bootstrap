@@ -420,8 +420,11 @@ function ($compile, $parse, $document, $position, dateFilter, datepickerPopupCon
         scope.position = appendToBody ? $position.offset(element) : $position.position(element);
         if(scope.additionalClass){
             scope.position.top = scope.position.top - $popup.prop('offsetHeight') / 2;
-            if(scope.position.left <= 50) {
-                scope.position.left = 0;
+            if(scope.position.left >= 100) {
+                scope.position.left = scope.position.left - 100;
+            }
+            if(scope.position.left <= 20) {
+                scope.position.left = 10;
             }
         } else {
             scope.position.top = scope.position.top + element.prop('offsetHeight');
